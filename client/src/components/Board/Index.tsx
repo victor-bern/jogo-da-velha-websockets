@@ -25,11 +25,14 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
   const [createRoomModalIsOpen, setCreateRoomModalIsOpen] = useState(false);
   const [joinRoomModalIsOpen, setJoinRoomModalIsOpen] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState('X');
+  const [player, setPlayer] = useState('X');
 
   const winner = getWinner(board);
 
   const handleClick = (i: number) => {
     const copyBoard = [...board];
+
+    if (currentPlayer != player) return;
 
     if (winner || copyBoard[i]) {
       notification.open({
@@ -52,12 +55,10 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
       socket.on('restart', () => {
         updateBoard(Array(9).fill(null));
         setCurrentPlayer('X');
-        console.log('AA');
       });
 
       socket.on('boardUpdated', ({ board, newPlayer }) => {
         updateBoard(board);
-        console.log(newPlayer);
         setCurrentPlayer(newPlayer);
       });
 
@@ -127,6 +128,7 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
           });
           saveRoomId(roomId);
           saveUsername(username);
+          setPlayer('O');
         }}
       />
       {winner ? (
