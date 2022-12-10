@@ -10,17 +10,14 @@ const io = new Socket.Server(server, {
 });
 
 io.on('connection', (socket) => {
-  socket.on('reqTurn', (data) => {
-    const room = JSON.parse(data).room;
-    socket.to(room).emit('playerTurn', data);
-  });
-
   socket.on('create', (data) => {
     socket.join(data.room);
+    socket.broadcast.emit('roomCreated');
   });
 
   socket.on('join', (data) => {
     socket.join(data.room);
+    socket.broadcast.emit('opponentJoined');
   });
 
   socket.on('updateBoard', (data) => {
@@ -32,9 +29,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('resetGame', (data) => {
-    socket.broadcast
-      .to(data.room)
-      .emit('restart', { board: Array(9).fill(null) });
+    socket.to(data.room).emit('restart', { board: Array(9).fill(null) });
   });
 
   socket.on('sendMessage', (data) => {
@@ -43,7 +38,7 @@ io.on('connection', (socket) => {
       username: data.username,
       content: data.content,
     });
-    socket.broadcast.to(data.room).emit('receiveMessage', {
+    socket.to(data.room).emit('receiveMessage', {
       messages,
     });
   });

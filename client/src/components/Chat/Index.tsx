@@ -20,7 +20,7 @@ const Chat: React.FC<ChatProps> = ({ socket }) => {
     socket.on('receiveMessage', (data) => {
       updateMessages(data.messages);
     });
-  }, []);
+  }, [socket, updateMessages]);
   return (
     <ChatContainer>
       <MessagesContainer>

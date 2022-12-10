@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, notification } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import { AppContext } from '../../context/AppContext';
@@ -18,7 +18,6 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
   const [createRoomModalIsOpen, setCreateRoomModalIsOpen] = useState(false);
   const [joinRoomModalIsOpen, setJoinRoomModalIsOpen] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState('X');
-  const [isXNext, setIsXNext] = useState(true);
 
   const winner = getWinner(board);
 
@@ -37,14 +36,28 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
   };
 
   useEffect(() => {
-    socket.on('restart', () => {
-      updateBoard(Array(9).fill(null));
-    });
+    return () => {
+      socket.on('restart', () => {
+        updateBoard(Array(9).fill(null));
+      });
 
-    socket.on('boardUpdated', ({ board, newPlayer }) => {
-      updateBoard(board);
-      setCurrentPlayer(newPlayer);
-    });
+      socket.on('boardUpdated', ({ board, newPlayer }) => {
+        updateBoard(board);
+        setCurrentPlayer(newPlayer);
+      });
+
+      socket.on('opponentJoined', () => {
+        (() => {
+          notification.open({
+            message: 'Opponent Appeared',
+          });
+        })();
+      });
+
+      socket.on('roomCreated', () => {
+        console.log('sala criada');
+      });
+    };
   }, []);
 
   return (
@@ -57,13 +70,15 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
           <Button type='primary' onClick={() => setJoinRoomModalIsOpen(true)}>
             Join Room
           </Button>
-          <button
+          <Button
+            type='primary'
             onClick={() => {
+              updateBoard(Array(9).fill(null));
               socket.emit('resetGame', { room: roomId });
             }}
           >
             Reset Game
-          </button>
+          </Button>
         </Buttons>
       </InfoContainer>
       <BoardContainer>
