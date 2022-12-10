@@ -29,6 +29,38 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
 
   const winner = getWinner(board);
 
+  const handleOkCreateRoomModal = (randomId: string, username: string) => {
+    if (!username) {
+      notification.error({
+        message: 'Need to insert username',
+      });
+      return;
+    }
+    socket.emit('create', {
+      room: randomId,
+      board,
+    });
+    saveRoomId(randomId);
+    setCreateRoomModalIsOpen(false);
+    saveUsername(username);
+  };
+
+  const handleOkJoinRoomModal = (roomId: string, username: string) => {
+    if (!username) {
+      notification.error({
+        message: 'Need to insert username',
+      });
+      return;
+    }
+    setJoinRoomModalIsOpen(false);
+    socket.emit('join', {
+      room: roomId,
+      board,
+    });
+    saveRoomId(roomId);
+    saveUsername(username);
+    setPlayer('O');
+  };
   const handleClick = (i: number) => {
     const copyBoard = [...board];
 
@@ -106,30 +138,13 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
       </BoardContainer>
       <CreateRoomModal
         modalIsOpen={createRoomModalIsOpen}
-        handleOkModal={(randomId, username) => {
-          socket.emit('create', {
-            room: randomId,
-            board,
-          });
-          saveRoomId(randomId);
-          setCreateRoomModalIsOpen(false);
-          saveUsername(username);
-        }}
+        handleOkModal={handleOkCreateRoomModal}
         closeModal={() => setCreateRoomModalIsOpen(false)}
       />
       <JoinRoomModal
         modalIsOpen={joinRoomModalIsOpen}
         closeModal={() => setJoinRoomModalIsOpen(false)}
-        handleOkModal={(roomId, username) => {
-          setJoinRoomModalIsOpen(false);
-          socket.emit('join', {
-            room: roomId,
-            board,
-          });
-          saveRoomId(roomId);
-          saveUsername(username);
-          setPlayer('O');
-        }}
+        handleOkModal={handleOkJoinRoomModal}
       />
       {winner ? (
         <WinnerText level={3}>The Winner is {winner}</WinnerText>
