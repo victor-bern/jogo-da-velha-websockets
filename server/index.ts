@@ -12,7 +12,10 @@ const io = new Socket.Server(server, {
 io.on('connection', (socket) => {
   socket.on('create', (data) => {
     socket.join(data.room);
-    socket.broadcast.emit('roomCreated');
+    io.sockets.emit('roomCreated', {
+      owner: data.clientId,
+      roomId: data.room,
+    });
   });
 
   socket.on('join', (data) => {

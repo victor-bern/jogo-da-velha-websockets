@@ -5,12 +5,14 @@ type JoinRoomModalProps = {
   modalIsOpen: boolean;
   closeModal: () => void;
   handleOkModal: (roomId: string, username: string) => void;
+  roomIdSelected?: string | '';
 };
 
 const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   modalIsOpen,
   closeModal,
   handleOkModal,
+  roomIdSelected,
 }) => {
   const [roomId, setRoomId] = useState('');
   const [username, setUsername] = useState('');
@@ -29,7 +31,8 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
           onChange={(e) => setUsername(e.currentTarget.value)}
         />
         <Input
-          defaultValue={roomId}
+          value={roomIdSelected ? roomIdSelected : roomId}
+          defaultValue={roomIdSelected ? roomIdSelected : roomId}
           onChange={(e) => setRoomId(e.currentTarget.value)}
         />
       </Modal>

@@ -20,12 +20,20 @@ type BoardProps = {
 };
 
 const Board: React.FC<BoardProps> = ({ socket }) => {
-  const { board, roomId, updateBoard, saveRoomId, saveUsername } =
-    useContext(AppContext);
+  const {
+    board,
+    roomId,
+    rooms,
+    player,
+    updateBoard,
+    saveRoomId,
+    saveUsername,
+    updateRooms,
+    updatePlayer,
+  } = useContext(AppContext);
   const [createRoomModalIsOpen, setCreateRoomModalIsOpen] = useState(false);
   const [joinRoomModalIsOpen, setJoinRoomModalIsOpen] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState('X');
-  const [player, setPlayer] = useState('X');
 
   const winner = getWinner(board);
 
@@ -38,7 +46,7 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
     }
     socket.emit('create', {
       room: randomId,
-      board,
+      clientId: localStorage.getItem('clientId'),
     });
     saveRoomId(randomId);
     setCreateRoomModalIsOpen(false);
@@ -59,7 +67,7 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
     });
     saveRoomId(roomId);
     saveUsername(username);
-    setPlayer('O');
+    updatePlayer('O');
   };
   const handleClick = (i: number) => {
     const copyBoard = [...board];
@@ -102,8 +110,14 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
         })();
       });
 
-      socket.on('roomCreated', () => {
-        console.log('sala criada');
+      socket.on('roomCreated', (data) => {
+        updateRooms([
+          ...rooms,
+          {
+            owner: data.owner,
+            roomId: data.roomId,
+          },
+        ]);
       });
     };
   }, []);

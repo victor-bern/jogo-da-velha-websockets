@@ -2,8 +2,8 @@ import { Input, Typography } from 'antd';
 import styled from 'styled-components';
 export const ChatContainer = styled.div`
   position: absolute;
-  bottom: 25px;
-  right: 25px;
+  bottom: 0;
+  right: 0;
   height: 500px;
   width: 300px;
   border: 1px solid black;
