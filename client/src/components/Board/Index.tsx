@@ -6,7 +6,14 @@ import { getWinner } from '../../services/boardService';
 import CreateRoomModal from '../CreateRoomModal/Index';
 import JoinRoomModal from '../JoinRoomModal/Index';
 import Square from '../Square/Index';
-import { BoardContainer, Buttons, Container, InfoContainer } from './style';
+import {
+  BoardContainer,
+  Buttons,
+  Container,
+  InfoContainer,
+  TurnOfInfo,
+  WinnerText,
+} from './style';
 
 type BoardProps = {
   socket: Socket;
@@ -24,7 +31,12 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
   const handleClick = (i: number) => {
     const copyBoard = [...board];
 
-    if (winner || copyBoard[i]) return;
+    if (winner || copyBoard[i]) {
+      notification.open({
+        message: `${winner} is the winner`,
+      });
+      return;
+    }
 
     copyBoard[i] = currentPlayer;
     updateBoard(copyBoard);
@@ -39,10 +51,13 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
     return () => {
       socket.on('restart', () => {
         updateBoard(Array(9).fill(null));
+        setCurrentPlayer('X');
+        console.log('AA');
       });
 
       socket.on('boardUpdated', ({ board, newPlayer }) => {
         updateBoard(board);
+        console.log(newPlayer);
         setCurrentPlayer(newPlayer);
       });
 
@@ -62,6 +77,7 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
 
   return (
     <Container>
+      {!winner ? <TurnOfInfo>Turn of: {currentPlayer}</TurnOfInfo> : null}
       <InfoContainer>
         <Buttons size={'middle'}>
           <Button type='primary' onClick={() => setCreateRoomModalIsOpen(true)}>
@@ -74,6 +90,7 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
             type='primary'
             onClick={() => {
               updateBoard(Array(9).fill(null));
+              setCurrentPlayer('X');
               socket.emit('resetGame', { room: roomId });
             }}
           >
@@ -112,6 +129,9 @@ const Board: React.FC<BoardProps> = ({ socket }) => {
           saveUsername(username);
         }}
       />
+      {winner ? (
+        <WinnerText level={3}>The Winner is {winner}</WinnerText>
+      ) : null}
     </Container>
   );
 };

@@ -23,13 +23,15 @@ io.on('connection', (socket) => {
   socket.on('updateBoard', (data) => {
     data.board as string[];
     const newPlayer = data.currentPlayer == 'X' ? 'O' : 'X';
-    socket.broadcast
-      .to(data.room)
+    io.sockets
+      .in(data.room)
       .emit('boardUpdated', { board: data.board, newPlayer });
   });
 
   socket.on('resetGame', (data) => {
-    socket.to(data.room).emit('restart', { board: Array(9).fill(null) });
+    socket.broadcast
+      .to(data.room)
+      .emit('restart', { board: Array(9).fill(null) });
   });
 
   socket.on('sendMessage', (data) => {

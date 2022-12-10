@@ -35,7 +35,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
           onChange={(e) => setUsername(e.currentTarget.value)}
         />
         <IdRoomInputGroup>
-          <Input defaultValue={randomId} />
+          <Input defaultValue={randomId} disabled />
           <Button
             type='primary'
             onClick={(e) => {
@@ -43,7 +43,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
               navigator.clipboard.writeText(randomId);
             }}
           >
-            {isShared ? 'Copied' : 'Shared'}
+            {isShared ? 'Copied' : 'Share'}
           </Button>
         </IdRoomInputGroup>
       </Modal>

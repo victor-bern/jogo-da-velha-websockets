@@ -1,4 +1,4 @@
-import { Space } from 'antd';
+import { Space, Typography } from 'antd';
 import styled from 'styled-components';
 
 export const Container = styled.div`
@@ -26,4 +26,12 @@ export const BoardContainer = styled.div`
 export const Buttons = styled(Space)`
   display: flex;
   flex-direction: row;
+`;
+
+export const TurnOfInfo = styled(Typography.Title)`
+  margin-bottom: 16px;
+`;
+
+export const WinnerText = styled(Typography.Title)`
+  margin-top: 16px;
 `;
